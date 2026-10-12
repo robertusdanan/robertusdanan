@@ -1,31 +1,15 @@
 <div align="center">
 
-<img src="./assets/header.svg" alt="Robertus Danan — Creator · ViberCoder · TraderBot" width="100%" />
+<img src="./assets/header-v2.svg" alt="Robertus Danan — Creator · ViberCoder · TraderBot" width="100%" />
 
-<br/>
 
-**Membangun web, aplikasi Android, dan infrastruktur jaringan — dari Tulungagung untuk siapa saja.**
 
 <br/>
 
 [![GitHub](https://img.shields.io/badge/GitHub-robertusdanan-0d1117?style=for-the-badge&logo=github&logoColor=white)](https://github.com/robertusdanan)
 ![Location](https://img.shields.io/badge/Tulungagung-East_Java-14b8a6?style=for-the-badge&logo=googlemaps&logoColor=white)
-![Status](https://img.shields.io/badge/Status-Open_for_freelance-ff4d6d?style=for-the-badge)
 
 </div>
-
----
-
-### 🎮 Tentang Saya
-
-```text
-> PLAYER   : Robertus Danan  (Tenaga IT Lokal Tulungagung)
-> CLASS    : Creator · ViberCoder · TraderBot
-> BASE     : Tulungagung, Jawa Timur, Indonesia
-> SKILLS   : Web Development · Android Development
->            Instalasi Jaringan & CCTV · Sistem Absensi Digital
-> MISSION  : Bikin sistem yang rapi, cepat, dan benar-benar kepakai.
-```
 
 ### 🛠️ Tech Stack
 
@@ -51,37 +35,3 @@
 | 🌐 Web | 📱 Android | 📡 Jaringan & CCTV | 🕒 Absensi Digital |
 | :---: | :---: | :---: | :---: |
 | Website & sistem informasi | Aplikasi Kotlin / Compose | Instalasi, konfigurasi, monitoring | Sistem presensi untuk instansi & organisasi |
-
----
-
-### 👾 Contribution Shooter
-
-<div align="center">
-
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/robertusdanan/robertusdanan/output/shooter-dark.svg" />
-  <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/robertusdanan/robertusdanan/output/shooter-light.svg" />
-  <img alt="Contribution shooter — pesawat menembak grafik kontribusi GitHub" src="https://raw.githubusercontent.com/robertusdanan/robertusdanan/output/shooter-dark.svg" />
-</picture>
-
-<sub>Setiap kotak aktif = satu "musuh" yang ditembak. Diperbarui otomatis tiap 12 jam.</sub>
-
-</div>
-
----
-
-### 📫 Hubungi Saya
-
-<div align="center">
-
-Butuh website, aplikasi, atau instalasi jaringan? Mari ngobrol.
-
-[![GitHub](https://img.shields.io/badge/-@robertusdanan-0d1117?style=flat-square&logo=github&logoColor=white)](https://github.com/robertusdanan)
-<!-- Tambahkan kontak lain bila mau, contoh:
-[![WhatsApp](https://img.shields.io/badge/-WhatsApp-25D366?style=flat-square&logo=whatsapp&logoColor=white)](https://wa.me/62XXXXXXXXXX)
-[![Email](https://img.shields.io/badge/-Email-EA4335?style=flat-square&logo=gmail&logoColor=white)](mailto:emailanda@example.com)
--->
-
-<sub>⭐ Terima kasih sudah mampir — GAME ON.</sub>
-
-</div>
