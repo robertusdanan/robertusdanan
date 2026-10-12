@@ -8,8 +8,6 @@
 
 [![GitHub](https://img.shields.io/badge/GitHub-robertusdanan-0d1117?style=for-the-badge&logo=github&logoColor=white)](https://github.com/robertusdanan)
 ![Location](https://img.shields.io/badge/Tulungagung-East_Java-14b8a6?style=for-the-badge&logo=googlemaps&logoColor=white)
-![Status](https://img.shields.io/badge/Status-Open_for_freelance-ff4d6d?style=for-the-badge)
-
 </div>
 
 ---
