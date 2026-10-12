@@ -1,0 +1,33 @@
+name: Generate Shooter
+
+on:
+  schedule:
+    - cron: "0 */12 * * *"   # setiap 12 jam
+  workflow_dispatch:          # bisa dijalankan manual dari tab Actions
+  push:
+    branches: [main]
+    paths:
+      - "scripts/generate_shooter.py"
+      - ".github/workflows/shooter.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Generate shooter SVG (dark + light)
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: python3 scripts/generate_shooter.py --user "${{ github.repository_owner }}" --out dist
+
+      - name: Push ke branch output
+        uses: crazy-max/ghaction-github-pages@v4
+        with:
+          target_branch: output
+          build_dir: dist
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
