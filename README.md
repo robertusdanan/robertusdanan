@@ -1,6 +1,6 @@
 <div align="center">
 
-<a href="#"><!-- link kosong: klik tidak membuka file gambar -->
+<a href="#"><!-- empty link: clicking does not open the image file -->
 <img src="./assets/header-v2.svg" alt="Robertus Danan — Creator · ViberCoder · TraderBot" width="100%" />
 </a>
 
@@ -8,7 +8,7 @@
 
 [![GitHub](https://img.shields.io/badge/GitHub-robertusdanan-0d1117?style=for-the-badge&logo=github&logoColor=white)](https://github.com/robertusdanan)
 ![Location](https://img.shields.io/badge/Tulungagung-East_Java-14b8a6?style=for-the-badge&logo=googlemaps&logoColor=white)
-[![Profil Interaktif](https://img.shields.io/badge/Profil_Interaktif-Tata_Surya_🪐-7c3aed?style=for-the-badge&logo=googlechrome&logoColor=white)](https://robertusdanan.github.io/profile/)
+[![My Profile](https://img.shields.io/badge/Profile-Visit_My_Page-7c3aed?style=for-the-badge&logo=googlechrome&logoColor=white)](https://robertusdanan.github.io/profile/)
 
 </div>
 
