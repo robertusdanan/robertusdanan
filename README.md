@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="./assets/header.svg" alt="Robertus Danan — Freelance IT Developer" width="100%" />
+<img src="./assets/header.svg" alt="Robertus Danan — Creator · ViberCoder · TraderBot" width="100%" />
 
 <br/>
 
@@ -20,7 +20,7 @@
 
 ```text
 > PLAYER   : Robertus Danan  (Tenaga IT Lokal Tulungagung)
-> CLASS    : Freelance IT Developer
+> CLASS    : Creator · ViberCoder · TraderBot
 > BASE     : Tulungagung, Jawa Timur, Indonesia
 > SKILLS   : Web Development · Android Development
 >            Instalasi Jaringan & CCTV · Sistem Absensi Digital
