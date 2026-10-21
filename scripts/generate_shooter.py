@@ -38,13 +38,13 @@ THEMES = {
 }
 
 
-def fetch_calendar(user, token):
-    query = """query($login:String!){user(login:$login){contributionsCollection{
+def fetch_calendar(user, token, year=None):
+    query = """query($login:String!,$from:DateTime!,$to:DateTime!){user(login:$login){contributionsCollection(from:$from,to:$to){
       contributionCalendar{totalContributions weeks{contributionDays{
       contributionCount contributionLevel weekday}}}}}}"""
     req = urllib.request.Request(
         "https://api.github.com/graphql",
-        data=json.dumps({"query": query, "variables": {"login": user}}).encode(),
+        data=json.dumps({"query": query, "variables": {"login": user, "from": f"{year_range(year)[0]}T00:00:00Z", "to": f"{year_range(year)[1]}T23:59:59Z"}}).encode(),
         headers={"Authorization": f"bearer {token}", "Content-Type": "application/json",
                  "User-Agent": "contribution-shooter"})
     with urllib.request.urlopen(req, timeout=30) as r:
@@ -59,16 +59,20 @@ def fetch_calendar(user, token):
     return weeks, cal["totalContributions"]
 
 
-def calendar_from_days(days):
+def calendar_from_days(days, start_d=None, end_d=None):
     """days: {date: (level, count)} -> (weeks, total). Columns start on Sunday like GitHub."""
     import datetime as dt
-    start_d, end_d = min(days), max(days)
+    start_d, end_d = start_d or min(days), end_d or max(days)
     start = start_d - dt.timedelta(days=start_d.isoweekday() % 7)
     weeks, total, day = [], 0, start
     while day <= end_d:
         col = []
         for _ in range(7):
             d = days.get(day)
+            if day < start_d or day > end_d:
+                d = None                      # outside the shown range (like GitHub's blank cells)
+            elif d is None:
+                d = (0, 0)
             if d is not None:
                 total += d[1]
             col.append(d)
@@ -77,12 +81,20 @@ def calendar_from_days(days):
     return weeks, total
 
 
-def fetch_public_calendar(user):
+def year_range(year):
+    import datetime as dt
+    if year:
+        return dt.date(year, 1, 1), dt.date(year, 12, 31)
+    end = dt.date.today()
+    return end - dt.timedelta(days=364), end
+
+
+def fetch_public_calendar(user, year=None):
     """Scrape https://github.com/users/<user>/contributions (what the profile page shows;
     works without a token and includes private contributions if the profile shows them)."""
     import datetime as dt
     import re
-    req = urllib.request.Request(f"https://github.com/users/{user}/contributions",
+    req = urllib.request.Request(f"https://github.com/users/{user}/contributions?from={year_range(year)[0]}&to={year_range(year)[1]}",
                                  headers={"User-Agent": "contribution-shooter"})
     with urllib.request.urlopen(req, timeout=30) as r:
         html = r.read().decode("utf-8", "replace")
@@ -104,30 +116,15 @@ def fetch_public_calendar(user):
         days[dt.date.fromisoformat(date.group(1))] = (lvl, cnt)
     if not days:
         raise RuntimeError("no contribution cells found in the public calendar page")
-    return calendar_from_days(days)
+    return calendar_from_days(days, *year_range(year))
 
 
 def snapshot_calendar(path):
-    """Offline calendar from a {date: count} JSON file (last 53 weeks ending on the latest date)."""
+    """Offline fallback: {"year":2026,"days":{"2026-06-11":[level,count],...}}."""
     import datetime as dt
-    data = {dt.date.fromisoformat(k): v for k, v in json.load(open(path)).items()}
-    end = max(data)
-    start = end - dt.timedelta(days=end.isoweekday() % 7 + 52 * 7)   # a Sunday
-    mx = max(data.values())
-    weeks, total = [], 0
-    for w in range(53):
-        col = []
-        for d in range(7):
-            day = start + dt.timedelta(days=w * 7 + d)
-            if day > end:
-                col.append(None)
-                continue
-            n = data.get(day, 0)
-            total += n
-            lvl = 0 if n == 0 else min(4, 1 + int(n / mx * 4 - 1e-9))
-            col.append((lvl, n))
-        weeks.append(col)
-    return weeks, total
+    raw = json.load(open(path))
+    days = {dt.date.fromisoformat(k): tuple(v) for k, v in raw["days"].items()}
+    return calendar_from_days(days, *year_range(raw["year"]))
 
 
 def sample_calendar():
@@ -161,7 +158,7 @@ def anim(attr, frames, T, extra=""):
             f'keyTimes="{kt}" values="{vals}" {extra}/>')
 
 
-def build(weeks, total, user, theme):
+def build(weeks, total, user, theme, label="IN THE LAST 12 MONTHS"):
     t = THEMES[theme]
     ncol = len(weeks)
     W = MARGIN_X * 2 + ncol * PITCH - GAP
@@ -213,7 +210,7 @@ def build(weeks, total, user, theme):
     # HUD
     o.append(f'<text x="{MARGIN_X}" y="30" font-size="12" fill="{t["accent"]}" letter-spacing="2">PLAYER 1</text>')
     o.append(f'<text x="{MARGIN_X + 80}" y="30" font-size="12" fill="{t["title"]}" letter-spacing="1">{user.upper()}</text>')
-    o.append(f'<text x="{W/2}" y="30" font-size="12" fill="{t["text"]}" text-anchor="middle" letter-spacing="2">{total} CONTRIBUTIONS · LAST 12 MONTHS</text>')
+    o.append(f'<text x="{W/2}" y="30" font-size="12" fill="{t["text"]}" text-anchor="middle" letter-spacing="2">{total} CONTRIBUTIONS {label}</text>')
     o.append(f'<text x="{W-MARGIN_X}" y="30" font-size="12" fill="{t["ship"]}" text-anchor="end" letter-spacing="3">♥ ♥ ♥</text>')
 
     # grid: empty slots + enemies
@@ -266,33 +263,43 @@ def build(weeks, total, user, theme):
     return "\n".join(o)
 
 
+def dt_year():
+    import datetime as dt
+    return dt.date.today().year
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--user", default=os.environ.get("GITHUB_USER", "robertusdanan"))
     ap.add_argument("--out", default="dist")
     ap.add_argument("--sample", action="store_true")
-    ap.add_argument("--snapshot", help="JSON {date: count} file for offline generation")
+    ap.add_argument("--year", type=int, default=int(os.environ.get("SHOOTER_YEAR", dt_year())),
+                    help="calendar year to show (like the profile page); 0 = rolling last 12 months")
+    ap.add_argument("--snapshot", help="offline fallback JSON (scripts/snapshot.json)")
     a = ap.parse_args()
+    year = a.year or None
+    label = f"IN {year}" if year else "IN THE LAST 12 MONTHS"
     if a.snapshot:
         weeks, total = snapshot_calendar(a.snapshot)
+        label = f"IN {json.load(open(a.snapshot))['year']}"
     elif a.sample:
         weeks, total = sample_calendar()
     else:
         try:                                     # 1) exactly what the profile page shows
-            weeks, total = fetch_public_calendar(a.user)
+            weeks, total = fetch_public_calendar(a.user, year)
             print("source: public contribution calendar")
         except Exception as e:                   # 2) GraphQL API
             print("public calendar failed:", e)
             token = os.environ.get("GITHUB_TOKEN")
             if not token:
                 raise SystemExit("no data source available (public page failed, no GITHUB_TOKEN)")
-            weeks, total = fetch_calendar(a.user, token)
+            weeks, total = fetch_calendar(a.user, token, year)
             print("source: GraphQL API")
     os.makedirs(a.out, exist_ok=True)
     for theme in THEMES:
         path = os.path.join(a.out, f"shooter-{theme}.svg")
         with open(path, "w", encoding="utf-8") as fh:
-            fh.write(build(weeks, total, a.user, theme))
+            fh.write(build(weeks, total, a.user, theme, label))
         print("wrote", path)
 
 
