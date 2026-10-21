@@ -1,7 +1,7 @@
 <div align="center">
 
 <a href="#"><!-- empty link: clicking does not open the image file -->
-<img src="./assets/header-v2.svg" alt="Robertus Danan — Creator · ViberCoder · TraderBot" width="100%" />
+<img src="./assets/header.svg" alt="Robertus Danan — Creator · ViberCoder · TraderBot" width="100%" />
 </a>
 
 <br/>
@@ -30,5 +30,29 @@
 ![Python](https://img.shields.io/badge/Python-3776AB?style=flat-square&logo=python&logoColor=white)
 ![Linux](https://img.shields.io/badge/Linux-FCC624?style=flat-square&logo=linux&logoColor=black)
 ![Caddy](https://img.shields.io/badge/Caddy-1F88C0?style=flat-square&logo=caddy&logoColor=white)
+
+</div>
+
+---
+
+### 👾 Apa yang saya kerjakan
+
+- 🌐 **Web** — PHP & Laravel, sistem informasi dan website instansi/komunitas
+- 📱 **Android** — Kotlin + Jetpack Compose
+- 🤖 **AI Agent & otomasi** — workflow n8n, pipeline konten otomatis
+- 📈 **TraderBot** — bot trading otomatis
+- 🛠️ **Infrastruktur** — Docker, Caddy, VPS Linux
+
+---
+
+### 🎮 Contribution Shooter
+
+<div align="center">
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/robertusdanan/robertusdanan/output/shooter-dark.svg" />
+  <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/robertusdanan/robertusdanan/output/shooter-light.svg" />
+  <img alt="Contribution shooter" src="https://raw.githubusercontent.com/robertusdanan/robertusdanan/output/shooter-dark.svg" width="100%" />
+</picture>
 
 </div>
