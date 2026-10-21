@@ -59,6 +59,54 @@ def fetch_calendar(user, token):
     return weeks, cal["totalContributions"]
 
 
+def calendar_from_days(days):
+    """days: {date: (level, count)} -> (weeks, total). Columns start on Sunday like GitHub."""
+    import datetime as dt
+    start_d, end_d = min(days), max(days)
+    start = start_d - dt.timedelta(days=start_d.isoweekday() % 7)
+    weeks, total, day = [], 0, start
+    while day <= end_d:
+        col = []
+        for _ in range(7):
+            d = days.get(day)
+            if d is not None:
+                total += d[1]
+            col.append(d)
+            day += dt.timedelta(days=1)
+        weeks.append(col)
+    return weeks, total
+
+
+def fetch_public_calendar(user):
+    """Scrape https://github.com/users/<user>/contributions (what the profile page shows;
+    works without a token and includes private contributions if the profile shows them)."""
+    import datetime as dt
+    import re
+    req = urllib.request.Request(f"https://github.com/users/{user}/contributions",
+                                 headers={"User-Agent": "contribution-shooter"})
+    with urllib.request.urlopen(req, timeout=30) as r:
+        html = r.read().decode("utf-8", "replace")
+    tips = {}
+    for m in re.finditer(r'<tool-tip[^>]*\bfor="([^"]+)"[^>]*>\s*([^<]*?)\s*</tool-tip>', html):
+        n = re.match(r"(\d+|No)\s+contributions?", m.group(2))
+        if n:
+            tips[m.group(1)] = 0 if n.group(1) == "No" else int(n.group(1))
+    days = {}
+    for m in re.finditer(r"<td\b[^>]*>", html):
+        tag = m.group(0)
+        date = re.search(r'data-date="(\d{4}-\d{2}-\d{2})"', tag)
+        level = re.search(r'data-level="(\d)"', tag)
+        if not (date and level):
+            continue
+        ident = re.search(r'\bid="([^"]+)"', tag)
+        lvl = int(level.group(1))
+        cnt = tips.get(ident.group(1) if ident else "", 0 if lvl == 0 else 1)
+        days[dt.date.fromisoformat(date.group(1))] = (lvl, cnt)
+    if not days:
+        raise RuntimeError("no contribution cells found in the public calendar page")
+    return calendar_from_days(days)
+
+
 def snapshot_calendar(path):
     """Offline calendar from a {date: count} JSON file (last 53 weeks ending on the latest date)."""
     import datetime as dt
@@ -230,10 +278,16 @@ def main():
     elif a.sample:
         weeks, total = sample_calendar()
     else:
-        token = os.environ.get("GITHUB_TOKEN")
-        if not token:
-            raise SystemExit("GITHUB_TOKEN is required (or use --sample)")
-        weeks, total = fetch_calendar(a.user, token)
+        try:                                     # 1) exactly what the profile page shows
+            weeks, total = fetch_public_calendar(a.user)
+            print("source: public contribution calendar")
+        except Exception as e:                   # 2) GraphQL API
+            print("public calendar failed:", e)
+            token = os.environ.get("GITHUB_TOKEN")
+            if not token:
+                raise SystemExit("no data source available (public page failed, no GITHUB_TOKEN)")
+            weeks, total = fetch_calendar(a.user, token)
+            print("source: GraphQL API")
     os.makedirs(a.out, exist_ok=True)
     for theme in THEMES:
         path = os.path.join(a.out, f"shooter-{theme}.svg")
