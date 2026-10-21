@@ -50,9 +50,9 @@
 <div align="center">
 
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/robertusdanan/robertusdanan/output/shooter-dark.svg" />
-  <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/robertusdanan/robertusdanan/output/shooter-light.svg" />
-  <img alt="Contribution shooter" src="https://raw.githubusercontent.com/robertusdanan/robertusdanan/output/shooter-dark.svg" width="100%" />
+  <source media="(prefers-color-scheme: dark)" srcset="./assets/shooter-dark.svg" />
+  <source media="(prefers-color-scheme: light)" srcset="./assets/shooter-light.svg" />
+  <img alt="Contribution shooter" src="./assets/shooter-dark.svg" width="100%" />
 </picture>
 
 </div>

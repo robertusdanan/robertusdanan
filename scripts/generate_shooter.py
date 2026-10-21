@@ -59,6 +59,29 @@ def fetch_calendar(user, token):
     return weeks, cal["totalContributions"]
 
 
+def snapshot_calendar(path):
+    """Offline calendar from a {date: count} JSON file (last 53 weeks ending on the latest date)."""
+    import datetime as dt
+    data = {dt.date.fromisoformat(k): v for k, v in json.load(open(path)).items()}
+    end = max(data)
+    start = end - dt.timedelta(days=end.isoweekday() % 7 + 52 * 7)   # a Sunday
+    mx = max(data.values())
+    weeks, total = [], 0
+    for w in range(53):
+        col = []
+        for d in range(7):
+            day = start + dt.timedelta(days=w * 7 + d)
+            if day > end:
+                col.append(None)
+                continue
+            n = data.get(day, 0)
+            total += n
+            lvl = 0 if n == 0 else min(4, 1 + int(n / mx * 4 - 1e-9))
+            col.append((lvl, n))
+        weeks.append(col)
+    return weeks, total
+
+
 def sample_calendar():
     rnd = random.Random(7)
     weeks, total = [], 0
@@ -200,8 +223,11 @@ def main():
     ap.add_argument("--user", default=os.environ.get("GITHUB_USER", "robertusdanan"))
     ap.add_argument("--out", default="dist")
     ap.add_argument("--sample", action="store_true")
+    ap.add_argument("--snapshot", help="JSON {date: count} file for offline generation")
     a = ap.parse_args()
-    if a.sample:
+    if a.snapshot:
+        weeks, total = snapshot_calendar(a.snapshot)
+    elif a.sample:
         weeks, total = sample_calendar()
     else:
         token = os.environ.get("GITHUB_TOKEN")
